@@ -1,0 +1,24 @@
+{
+    "activities": [
+        {
+        "title": "Formação de Mediadores de Leitura",
+        "owner": "Instituto de Computação",
+        "group": "03 - Pesquisa",
+        "modalidade": "Presencial",
+        "hours": 15,
+        "startDate": "09/10/2024",
+        "endDate": "15/10/2024",
+        "logoImage": "images/logo-ic.png"
+        },
+        {
+        "title": "Formação de Mediadores de Escrita",
+        "owner": "Instituto de Computação",
+        "group": "03 - Pesquisa",
+        "modalidade": "Presencial",
+        "hours": 15,
+        "startDate": "09/10/2024",
+        "endDate": "15/10/2024",
+        "logoImage": "images/logo-ic.png"
+        }
+    ]
+}
