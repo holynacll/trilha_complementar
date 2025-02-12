@@ -1,3 +1,4 @@
+import 'package:complemento/enums.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'activity.freezed.dart';
@@ -8,9 +9,10 @@ class Activity with _$Activity {
   @JsonSerializable(explicitToJson: true)
   const factory Activity({
     required String title,
-    required String owner,
-    required String group,
-    required String modalidade,
+    required String description,
+    required ActivityGroup group,
+    required String address,
+    required String url,
     required int hours,
     required DateTime startDate,
     required DateTime endDate,

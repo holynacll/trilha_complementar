@@ -1,33 +1,48 @@
-import 'package:complemento/activity/activity.dart';
-import 'package:complemento/activity/controller.dart';
-import 'package:complemento/enums.dart';
 import 'package:complemento/services/storage_service.dart';
-import 'package:complemento/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:complemento/activity/activity.dart';
+import 'package:complemento/enums.dart';
+import 'package:complemento/utils.dart';
 import 'package:intl/intl.dart';
 
-class CreateProjectPage extends ConsumerStatefulWidget {
-  const CreateProjectPage({super.key});
+class EditActivityPage extends StatefulWidget {
+  final Activity activity;
+
+  const EditActivityPage({super.key, required this.activity});
 
   @override
-  ConsumerState<CreateProjectPage> createState() => _CreateProjectPageState();
+  State<EditActivityPage> createState() => _EditActivityPageState();
 }
 
-class _CreateProjectPageState extends ConsumerState<CreateProjectPage> {
+class _EditActivityPageState extends State<EditActivityPage> {
   final _formKey = GlobalKey<FormState>();
   String? _uploadedImageUrl;
   final S3UploadService _s3Service = S3UploadService();
-
+  late TextEditingController _titleController;
+  late TextEditingController _descriptionController;
+  late TextEditingController _addressController;
+  late TextEditingController _hoursController;
+  late TextEditingController _urlController;
   final DateFormat _dateFormat = DateFormat('dd/MM/yyyy');
-  final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
-  final TextEditingController _addressController = TextEditingController();
-  final TextEditingController _hoursController = TextEditingController();
-  final TextEditingController _urlController = TextEditingController();
-  ActivityGroup? _selectedGroup;
-  DateTime? _startDate;
-  DateTime? _endDate;
+  late ActivityGroup _selectedGroup;
+  late DateTime _startDate;
+  late DateTime _endDate;
+
+  @override
+  void initState() {
+    super.initState();
+    // Preenche os controladores com os dados da atividade
+    _titleController = TextEditingController(text: widget.activity.title);
+    _descriptionController =
+        TextEditingController(text: widget.activity.description);
+    _addressController = TextEditingController(text: widget.activity.address);
+    _hoursController =
+        TextEditingController(text: widget.activity.hours.toString());
+    _urlController = TextEditingController(text: widget.activity.url);
+    _selectedGroup = widget.activity.group;
+    _startDate = widget.activity.startDate;
+    _endDate = widget.activity.endDate;
+  }
 
   Future<void> _uploadImage() async {
     final imageUrl = await _s3Service.uploadImageToS3();
@@ -56,9 +71,9 @@ class _CreateProjectPageState extends ConsumerState<CreateProjectPage> {
         if (isStartDate) {
           _startDate = newDate;
           // Se a data de término for antes da data de início, limpa a data de término
-          if (_endDate != null && _endDate!.isBefore(_startDate!)) {
-            _endDate = null;
-          }
+          // if (_endDate.isBefore(_startDate)) {
+          //   _endDate = null;
+          // }
         } else {
           _endDate = newDate;
         }
@@ -70,7 +85,7 @@ class _CreateProjectPageState extends ConsumerState<CreateProjectPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Criar Nova Atividade Complementar'),
+        title: const Text('Editar Atividade'),
         backgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: Theme.of(context).colorScheme.onPrimary,
       ),
@@ -140,7 +155,7 @@ class _CreateProjectPageState extends ConsumerState<CreateProjectPage> {
                 }).toList(),
                 onChanged: (ActivityGroup? newValue) {
                   setState(() {
-                    _selectedGroup = newValue;
+                    _selectedGroup = newValue!;
                   });
                 },
                 validator: (value) => value == null ? 'Informe o grupo' : null,
@@ -208,37 +223,33 @@ class _CreateProjectPageState extends ConsumerState<CreateProjectPage> {
                 decoration: const InputDecoration(
                     labelText: 'Link para a página da atividade'),
               ),
-              const SizedBox(
-                height: 16,
-              ),
+
+              // Botão de salvar
               ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                    // padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
-                  onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
-                      final newActivity = Activity(
-                        title: _titleController.text,
-                        description: _descriptionController.text,
-                        group: _selectedGroup!,
-                        address: _addressController.text,
-                        hours: int.parse(_hoursController.text),
-                        url: _urlController.text,
-                        startDate: _startDate!,
-                        endDate: _endDate!,
-                        logoImage: _uploadedImageUrl ?? '',
-                      );
-                      await ref
-                          .read(activityControllerProvider.notifier)
-                          .addActivity(newActivity);
-                      Navigator.pop(context);
-                    }
-                  },
-                  child: Text(
-                    'Salvar Atividade',
-                  )),
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    // Atualiza a atividade com os novos dados
+                    final updatedActivity = Activity(
+                      title: _titleController.text,
+                      description: _descriptionController.text,
+                      group: _selectedGroup,
+                      address: _addressController.text,
+                      hours: int.parse(_hoursController.text),
+                      url: _urlController.text,
+                      startDate: _startDate,
+                      endDate: _endDate,
+                      logoImage: widget.activity.logoImage,
+                    );
+
+                    // Atualiza a atividade no Provider ou Riverpod
+                    // ref.read(activityControllerProvider.notifier).updateActivity(updatedActivity);
+
+                    // Navega de volta
+                    Navigator.pop(context);
+                  }
+                },
+                child: const Text('Salvar Alterações'),
+              ),
             ],
           ),
         ),

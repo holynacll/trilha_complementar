@@ -18,4 +18,5 @@ class ActivityController extends _$ActivityController {
     state =
         await AsyncValue.guard(() => FirebaseActivityService().getActivities());
   }
+
 }

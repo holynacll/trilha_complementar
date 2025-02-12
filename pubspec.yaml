@@ -46,6 +46,11 @@ dependencies:
   freezed_annotation: ^2.4.4
   json_annotation: ^4.9.0
   cloud_firestore: ^5.6.3
+  firebase_storage: ^12.4.2
+  dio: ^5.8.0+1
+  file_picker: ^8.3.5
+  uuid: ^4.5.1
+  aws_s3_upload_lite: ^0.1.5
 
 dev_dependencies:
   flutter_test:

@@ -1,33 +1,30 @@
+import 'package:complemento/activity/activity.dart';
+import 'package:complemento/components/details_activity_page.dart';
+import 'package:complemento/enums.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class CardProject extends StatelessWidget {
   const CardProject({
     super.key,
-    required this.logoImage,
-    required this.title,
-    required this.owner,
-    required this.group,
-    required this.modalidade,
-    required this.hours,
-    required this.startDate,
-    required this.endDate,
+    required this.activity,
   });
 
-  final String title;
-  final String owner;
-  final String group;
-  final String modalidade;
-  final int hours;
-  final String startDate;
-  final String endDate;
-  final Image logoImage;
+  final Activity activity;
 
   @override
   Widget build(BuildContext context) {
+    final DateFormat dateFormat = DateFormat('dd/MM/yyyy');
+    final logoImage = activity.logoImage.isNotEmpty
+        ? Image.network(activity.logoImage, height: 150)
+        : const Icon(Icons.image);
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.only(bottom: 16),
       child: GestureDetector(
-        onTap: () => print('tapped'),
+        onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ActivityDetailsPage(activity: activity))),
         child: Card(
           elevation: 5,
           shape: RoundedRectangleBorder(
@@ -35,51 +32,45 @@ class CardProject extends StatelessWidget {
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
-            // mainAxisSize: MainAxisSize.min,
             children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        activity.title,
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleLarge, // Use theme for styling
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                          '${dateFormat.format(activity.startDate)} até ${dateFormat.format(activity.endDate)}',
+                          style: Theme.of(context).textTheme.bodySmall),
+                      const SizedBox(height: 10),
+                      Opacity(
+                        opacity: 0.7,
+                        child: Text(
+                          'Carga Horária: ${activity.hours} horas',
+                          style: Theme.of(context).textTheme.bodySmall,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
               SizedBox(
-                height: 250,
-                width: 250,
+                height: 100,
+                width: 100,
                 child: Padding(
                   padding: const EdgeInsets.all(12.0),
                   child: AspectRatio(aspectRatio: 7, child: logoImage),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleLarge, // Use theme for styling
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ), // Use const SizedBox
-                    Text(owner, style: Theme.of(context).textTheme.bodyMedium),
-                    const SizedBox(height: 10),
-                    Text('Grupo: $group',
-                        style: Theme.of(context).textTheme.bodyMedium),
-                    const SizedBox(height: 10),
-                    Text('Carga Horária: $hours',
-                        style: Theme.of(context).textTheme.bodyMedium),
-                    const SizedBox(height: 10),
-                    Text('Modalidade: $modalidade',
-                        style: Theme.of(context).textTheme.bodyMedium),
-                    const SizedBox(height: 10),
-                    Text('Data de Início: $startDate',
-                        style: Theme.of(context).textTheme.bodyMedium),
-                    const SizedBox(height: 10),
-                    Text('Data de Término: $endDate',
-                        style: Theme.of(context).textTheme.bodyMedium),
-                  ],
-                ),
-              )
             ],
           ),
         ),
